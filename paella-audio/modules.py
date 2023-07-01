@@ -1,4 +1,4 @@
-from typing import Optional, Any, Literal
+from typing import Optional, Any, Literal, List
 from torchtyping import TensorType
 
 import torch
@@ -360,12 +360,12 @@ class Conformer(nn.Module):
                 if module.bias is not None:
                     nn.init.constant_(module.bias, 0)
         self.apply(_basic_init)
-
+    
         # Zero-out adaLN modulation layers in DiT blocks:
         for block in self.blocks:
             nn.init.constant_(block.adaLN_modulation[-1].weight, 0)
             nn.init.constant_(block.adaLN_modulation[-1].bias, 0)
-
+            
         # Zero-out output layers:
         nn.init.constant_(self.final_layer.adaLN_modulation[-1].weight, 0)
         nn.init.constant_(self.final_layer.adaLN_modulation[-1].bias, 0)
@@ -392,7 +392,7 @@ class Conformer(nn.Module):
         return out
 
 
-class AcousticGenerator(nn.Module):
+class PaellaAudio(nn.Module):
     def __init__(
         self,
         num_quantizers: int,
@@ -533,7 +533,7 @@ class AcousticGenerator(nn.Module):
     def sample(
         self,
         seq_len: int,
-        steps_scheduler: list[int],
+        steps_scheduler: List[int],
         embedding: Optional[TensorType["batch", "channels", "embedding_features"]] = None,
         temperature: tuple = (0.7, 0.3),
         batch_size: int = 1,
